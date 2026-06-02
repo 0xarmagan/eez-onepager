@@ -67,6 +67,12 @@
     .hero-meta {
       display: flex; align-items: center; gap: 14px; margin-bottom: 24px;
     }
+    .hero-logo {
+      font-size: 13px; font-weight: 700; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--mint);
+      border: 1px solid var(--mint-border); border-radius: 3px;
+      padding: 5px 14px; display: inline-block; margin-bottom: 20px;
+    }
     .hero-badge {
       font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
       color: var(--mint); border: 1px solid var(--mint-border); border-radius: 2px;
@@ -256,72 +262,100 @@
     .sc-note { font-size: 10px; color: var(--fg-dim); margin-top: 8px; line-height: 1.55; }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-       § 4  USE CASES — image grid
+       § 4  USE CASES — carousel
     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
     #usecases { padding: 48px 0; background: rgba(255,255,255,0.01); }
 
-    .uc-intro {
-      display: flex; align-items: flex-end; justify-content: space-between;
+    .uc-header {
+      display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 24px;
     }
-    .uc-intro-hint {
-      font-size: 11px; color: var(--fg-dim); text-transform: uppercase;
-      letter-spacing: 0.08em;
+    .uc-nav {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .uc-nav-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 1px solid var(--border-mid); background: var(--card);
+      color: var(--fg-muted); font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.2s, background 0.2s, color 0.2s;
+      user-select: none;
+    }
+    .uc-nav-btn:hover { border-color: var(--border-hi); background: var(--card-hi); color: var(--fg); }
+    .uc-nav-btn:disabled { opacity: 0.25; cursor: default; }
+    .uc-counter {
+      font-family: var(--mono); font-size: 11px; color: var(--fg-dim);
+      letter-spacing: 0.08em; min-width: 44px; text-align: center;
     }
 
-    .uc-grid {
-      display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+    .uc-viewport { overflow: hidden; }
+    .uc-track {
+      display: flex; gap: 12px;
+      transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      will-change: transform;
     }
-
     .uc-card {
-      border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
-      background: var(--card);
-      display: flex; flex-direction: column;
-      cursor: default;
+      flex: 0 0 calc(50% - 6px);
+      border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+      background: var(--card); display: flex; flex-direction: column;
+      transition: border-color 0.2s;
     }
     .uc-card:hover { border-color: var(--border-mid); }
 
-    /* image flip container */
+    /* image flip */
     .uc-img-wrap {
-      position: relative; aspect-ratio: 16/9; overflow: hidden;
-      background: #0a1520;
+      position: relative; aspect-ratio: 16/9; overflow: hidden; background: #081218;
     }
     .uc-img-wrap img {
       position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
-      transition: opacity 0.35s ease;
+      transition: opacity 0.4s ease;
     }
-    .uc-img-wrap .img-solved  { opacity: 1;  z-index: 2; }
-    .uc-img-wrap .img-problem { opacity: 0;  z-index: 1; }
+    .uc-img-wrap .img-solved  { opacity: 1; z-index: 2; }
+    .uc-img-wrap .img-problem { opacity: 0; z-index: 1; }
     .uc-card:hover .img-solved  { opacity: 0; }
     .uc-card:hover .img-problem { opacity: 1; }
 
-    .uc-img-badge {
-      position: absolute; top: 8px; right: 8px; z-index: 3;
+    .uc-badge {
+      position: absolute; top: 12px; right: 12px; z-index: 3;
       font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
-      padding: 3px 8px; border-radius: 3px;
-      background: var(--mint); color: #000;
+      padding: 4px 10px; border-radius: 3px;
       transition: opacity 0.25s;
     }
-    .uc-card:hover .uc-img-badge { opacity: 0; }
+    .uc-badge.solved  { background: var(--mint);              color: #000; }
+    .uc-badge.problem { background: rgba(255,50,50,0.85);     color: #fff; opacity: 0; }
+    .uc-card:hover .uc-badge.solved  { opacity: 0; }
+    .uc-card:hover .uc-badge.problem { opacity: 1; }
 
-    .uc-img-badge-prob {
-      position: absolute; top: 8px; right: 8px; z-index: 3;
-      font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
-      padding: 3px 8px; border-radius: 3px;
-      background: rgba(255,60,60,0.85); color: #fff;
-      opacity: 0; transition: opacity 0.25s;
+    .uc-meta {
+      padding: 20px 22px 22px; flex: 1; display: flex; flex-direction: column; gap: 6px;
     }
-    .uc-card:hover .uc-img-badge-prob { opacity: 1; }
-
-    .uc-meta { padding: 12px 14px 14px; flex: 1; display: flex; flex-direction: column; gap: 4px; }
-    .uc-num  { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--purple); }
+    .uc-num {
+      font-size: 9px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.14em; color: var(--purple);
+    }
     .uc-num::before { content: '[ '; } .uc-num::after { content: ' ]'; }
-    .uc-title { font-size: 13px; font-weight: 500; text-transform: lowercase; color: var(--fg); }
-    .uc-cap   { font-size: 11px; color: var(--fg-dim); line-height: 1.5; margin-top: 4px; }
-    .uc-hint  {
-      font-size: 9px; color: rgba(255,255,255,0.2); text-transform: uppercase;
-      letter-spacing: 0.08em; margin-top: auto; padding-top: 8px;
+    .uc-title { font-size: 16px; font-weight: 500; text-transform: lowercase; color: var(--fg); }
+    .uc-tagline {
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--mint); margin-top: 2px;
     }
+    .uc-desc { font-size: 13px; color: var(--fg-muted); line-height: 1.65; margin-top: 6px; }
+    .uc-hint {
+      font-size: 9px; color: rgba(255,255,255,0.18); text-transform: uppercase;
+      letter-spacing: 0.08em; margin-top: auto; padding-top: 12px;
+    }
+
+    /* dots */
+    .uc-dots {
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px; margin-top: 20px;
+    }
+    .uc-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--border-hi); cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .uc-dot.active { background: var(--mint); transform: scale(1.3); }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
        § 5  WHAT EEZ BRINGS TO ETHEREUM
@@ -397,11 +431,7 @@
 <section id="hero">
   <div class="page">
     <div class="hero-text">
-      <div class="hero-meta">
-        <span class="hero-badge">Announced March 2026</span>
-        <div class="hero-sep"></div>
-        <span class="hero-meta-txt">EthCC · Cannes · co-funded by Ethereum Foundation</span>
-      </div>
+      <div class="hero-logo">EEZ</div>
       <h1>ethereum<br><em>economic zone</em></h1>
       <div class="hero-tagline">
         real-time zk proofs <span>·</span>
@@ -645,148 +675,211 @@
 </section>
 
 <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-     § 5  USE CASES — image grid
+     § 5  USE CASES — carousel
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 <section id="usecases">
   <div class="page">
-    <div class="uc-intro">
+    <div class="uc-header">
       <h2 class="sec-title" style="margin-bottom:0">8 use cases — what EEZ enables</h2>
-      <span class="uc-intro-hint">Hover any card to see the problem state</span>
+      <div class="uc-nav">
+        <button class="uc-nav-btn" id="uc-prev" aria-label="Previous">&#8592;</button>
+        <span class="uc-counter" id="uc-counter">01 / 08</span>
+        <button class="uc-nav-btn" id="uc-next" aria-label="Next">&#8594;</button>
+      </div>
     </div>
 
-    <div class="uc-grid">
+    <div class="uc-viewport">
+      <div class="uc-track" id="uc-track">
 
-      <!-- UC 00: Synchronous Execution (Hero) -->
-      <div class="uc-card">
-        <div class="uc-img-wrap">
-          <img class="img-solved"  src="img/hero-solved.png"   alt="Synchronous execution — solved">
-          <img class="img-problem" src="img/hero-problem.png"  alt="Sequential execution — problem">
-          <span class="uc-img-badge">solved</span>
-          <span class="uc-img-badge-prob">problem</span>
+        <!-- UC 00 -->
+        <div class="uc-card">
+          <div class="uc-img-wrap">
+            <img class="img-solved"  src="img/hero-solved.png"  alt="Synchronous execution — solved">
+            <img class="img-problem" src="img/hero-problem.png" alt="Sequential execution — problem">
+            <span class="uc-badge solved">solved</span>
+            <span class="uc-badge problem">problem</span>
+          </div>
+          <div class="uc-meta">
+            <span class="uc-num">UC 00</span>
+            <div class="uc-title">synchronous execution</div>
+            <div class="uc-tagline">One Instant. Zero Failure Points.</div>
+            <div class="uc-desc">Today, a transaction touching Ethereum L1 and two L2s requires three sequential confirmations — each chain waits for the previous one to finalise. EEZ uses ZK proofs to pre-verify all state transitions, then executes across every chain simultaneously in a single Ethereum block. All nodes execute, verify, and settle together — or the whole batch reverts.</div>
+            <div class="uc-hint">hover image to see the problem state</div>
+          </div>
         </div>
-        <div class="uc-meta">
-          <span class="uc-num">UC 00</span>
-          <div class="uc-title">synchronous execution</div>
-          <div class="uc-cap">All nodes execute, verify, and settle in one instant — zero failure points, atomic finality</div>
-          <div class="uc-hint">hover to see problem ↑</div>
-        </div>
-      </div>
 
-      <!-- UC 01: Bridging -->
-      <div class="uc-card">
-        <div class="uc-img-wrap">
-          <img class="img-solved"  src="img/bridging-solved.png"   alt="Bridging — solved">
-          <img class="img-problem" src="img/bridging-problem.png"  alt="Bridging — problem">
-          <span class="uc-img-badge">solved</span>
-          <span class="uc-img-badge-prob">problem</span>
+        <!-- UC 01 -->
+        <div class="uc-card">
+          <div class="uc-img-wrap">
+            <img class="img-solved"  src="img/bridging-solved.png"  alt="Bridging — solved">
+            <img class="img-problem" src="img/bridging-problem.png" alt="Bridging — problem">
+            <span class="uc-badge solved">solved</span>
+            <span class="uc-badge problem">problem</span>
+          </div>
+          <div class="uc-meta">
+            <span class="uc-num">UC 01</span>
+            <div class="uc-title">bridging eliminated</div>
+            <div class="uc-tagline">Verify → Flow → Settle. Atomic.</div>
+            <div class="uc-desc">Traditional bridges introduce three failure points: the source lock, the relay, and the destination mint. Any one can fail, leaving users stranded. Bridge hacks are the single largest source of DeFi losses by dollar value. EEZ replaces all three steps with one atomic Ethereum-settled transaction — no trusted operator, no relay delay, no slippage between chains.</div>
+            <div class="uc-hint">hover image to see the problem state</div>
+          </div>
         </div>
-        <div class="uc-meta">
-          <span class="uc-num">UC 01</span>
-          <div class="uc-title">bridging eliminated</div>
-          <div class="uc-cap">Synchronous composability: Verify → Flow → Settle — atomic, no trusted bridge operator</div>
-          <div class="uc-hint">hover to see problem ↑</div>
-        </div>
-      </div>
 
-      <!-- UC 02: Liquidity -->
-      <div class="uc-card">
-        <div class="uc-img-wrap">
-          <img class="img-solved"  src="img/liquidity-solved.png"   alt="Liquidity — solved">
-          <img class="img-problem" src="img/liquidity-problem.png"  alt="Liquidity — problem">
-          <span class="uc-img-badge">solved</span>
-          <span class="uc-img-badge-prob">problem</span>
+        <!-- UC 02 -->
+        <div class="uc-card">
+          <div class="uc-img-wrap">
+            <img class="img-solved"  src="img/liquidity-solved.png"  alt="Unified liquidity — solved">
+            <img class="img-problem" src="img/liquidity-problem.png" alt="Fragmented liquidity — problem">
+            <span class="uc-badge solved">solved</span>
+            <span class="uc-badge problem">problem</span>
+          </div>
+          <div class="uc-meta">
+            <span class="uc-num">UC 02</span>
+            <div class="uc-title">unified market liquidity</div>
+            <div class="uc-tagline">Unified Market. One Price. Instant Arbitrage.</div>
+            <div class="uc-desc">Fragmented L2s mean the same token trades at different prices on different chains. Arbitrageurs spend entire blocks trying to equalise, but the window closes before settlement. EEZ creates a single unified price surface — every DEX on every EEZ instance shares the same effective order book depth. Price gaps close in the same block they open.</div>
+            <div class="uc-hint">hover image to see the problem state</div>
+          </div>
         </div>
-        <div class="uc-meta">
-          <span class="uc-num">UC 02</span>
-          <div class="uc-title">unified market liquidity</div>
-          <div class="uc-cap">Unified market: one price, instant arbitrage across all EEZ instances — no fragmentation</div>
-          <div class="uc-hint">hover to see problem ↑</div>
-        </div>
-      </div>
 
-      <!-- UC 03: Composable Finance -->
-      <div class="uc-card">
-        <div class="uc-img-wrap">
-          <img class="img-solved"  src="img/composable-solved.png"   alt="Composable Finance — solved">
-          <img class="img-problem" src="img/composable-problem.png"  alt="Composable Finance — problem">
-          <span class="uc-img-badge">solved</span>
-          <span class="uc-img-badge-prob">problem</span>
+        <!-- UC 03 -->
+        <div class="uc-card">
+          <div class="uc-img-wrap">
+            <img class="img-solved"  src="img/composable-solved.png"  alt="Composable finance — solved">
+            <img class="img-problem" src="img/composable-problem.png" alt="Composable finance — problem">
+            <span class="uc-badge solved">solved</span>
+            <span class="uc-badge problem">problem</span>
+          </div>
+          <div class="uc-meta">
+            <span class="uc-num">UC 03</span>
+            <div class="uc-title">composable finance</div>
+            <div class="uc-tagline">One Transaction. One Atomic Flow.</div>
+            <div class="uc-desc">Complex DeFi strategies across chains today require 4–6 separate transactions: bridge to L2, approve token, deposit collateral, borrow, swap, bridge back. Each step can fail independently, leaving collateral stranded mid-flow. EEZ compresses the entire strategy into a single atomic transaction. One approval. One execution context. One failure mode: everything succeeds or everything reverts.</div>
+            <div class="uc-hint">hover image to see the problem state</div>
+          </div>
         </div>
-        <div class="uc-meta">
-          <span class="uc-num">UC 03</span>
-          <div class="uc-title">composable finance</div>
-          <div class="uc-cap">One transaction, one atomic flow, zero failure points — DeFi money-lego across chains</div>
-          <div class="uc-hint">hover to see problem ↑</div>
-        </div>
-      </div>
 
-      <!-- UC 04: Global Collateral -->
-      <div class="uc-card">
-        <div class="uc-img-wrap">
-          <img class="img-solved"  src="img/collateral-solved.png"   alt="Global Collateral — solved">
-          <img class="img-problem" src="img/collateral-problem.png"  alt="Global Collateral — problem">
-          <span class="uc-img-badge">solved</span>
-          <span class="uc-img-badge-prob">problem</span>
+        <!-- UC 04 -->
+        <div class="uc-card">
+          <div class="uc-img-wrap">
+            <img class="img-solved"  src="img/collateral-solved.png"  alt="Global collateral — solved">
+            <img class="img-problem" src="img/collateral-problem.png" alt="Global collateral — problem">
+            <span class="uc-badge solved">solved</span>
+            <span class="uc-badge problem">problem</span>
+          </div>
+          <div class="uc-meta">
+            <span class="uc-num">UC 04</span>
+            <div class="uc-title">global collateral visibility</div>
+            <div class="uc-tagline">Global Visibility. One Credit Limit.</div>
+            <div class="uc-desc">When collateral lives on Ethereum L1 but borrowing happens on L2, the credit limit is invisible to the lending protocol. DeFi protocols today must choose one chain and lose visibility into assets on all others — forcing users to fragment their positions. EEZ makes collateral globally visible in real time: a $10,000 credit limit is enforced and seen across all chains simultaneously, with no bridges or oracles in the path.</div>
+            <div class="uc-hint">hover image to see the problem state</div>
+          </div>
         </div>
-        <div class="uc-meta">
-          <span class="uc-num">UC 04</span>
-          <div class="uc-title">global collateral visibility</div>
-          <div class="uc-cap">Credit limits visible and enforced across all chains simultaneously — global balance, instant settlement</div>
-          <div class="uc-hint">hover to see problem ↑</div>
-        </div>
-      </div>
 
-      <!-- UC 05: Global Access Control -->
-      <div class="uc-card">
-        <div class="uc-img-wrap">
-          <img class="img-solved"  src="img/access-solved.png"   alt="Global Access Control — solved">
-          <img class="img-problem" src="img/access-problem.png"  alt="Global Access Control — problem">
-          <span class="uc-img-badge">solved</span>
-          <span class="uc-img-badge-prob">problem</span>
+        <!-- UC 05 -->
+        <div class="uc-card">
+          <div class="uc-img-wrap">
+            <img class="img-solved"  src="img/access-solved.png"  alt="Atomic governance — solved">
+            <img class="img-problem" src="img/access-problem.png" alt="Atomic governance — problem">
+            <span class="uc-badge solved">solved</span>
+            <span class="uc-badge problem">problem</span>
+          </div>
+          <div class="uc-meta">
+            <span class="uc-num">UC 05</span>
+            <div class="uc-title">atomic governance</div>
+            <div class="uc-tagline">One Change. All Chains. Atomic Instant.</div>
+            <div class="uc-desc">Multisig vaults deployed on Ethereum, Optimism, Arbitrum, and Polygon today require four separate governance transactions to implement a single policy change — with no guarantee of simultaneous execution. A signer threshold update on one chain does not automatically propagate. EEZ synchronises all vault state in a single Ethereum transaction. One change, all chains, one atomic instant — no relay, no lag, no inconsistency window.</div>
+            <div class="uc-hint">hover image to see the problem state</div>
+          </div>
         </div>
-        <div class="uc-meta">
-          <span class="uc-num">UC 05</span>
-          <div class="uc-title">atomic governance</div>
-          <div class="uc-cap">All vaults sync in one instant — one change, all chains. Atomic multisig governance across Ethereum, Optimism, Arbitrum, Polygon</div>
-          <div class="uc-hint">hover to see problem ↑</div>
-        </div>
-      </div>
 
-      <!-- UC 06: Private ID -->
-      <div class="uc-card">
-        <div class="uc-img-wrap">
-          <img class="img-solved"  src="img/identity-solved.png"   alt="Private ID — solved">
-          <img class="img-problem" src="img/identity-problem.png"  alt="Private ID — problem">
-          <span class="uc-img-badge">solved</span>
-          <span class="uc-img-badge-prob">problem</span>
+        <!-- UC 06 -->
+        <div class="uc-card">
+          <div class="uc-img-wrap">
+            <img class="img-solved"  src="img/identity-solved.png"  alt="Cross-chain identity — solved">
+            <img class="img-problem" src="img/identity-problem.png" alt="Cross-chain identity — problem">
+            <span class="uc-badge solved">solved</span>
+            <span class="uc-badge problem">problem</span>
+          </div>
+          <div class="uc-meta">
+            <span class="uc-num">UC 06</span>
+            <div class="uc-title">cross-chain identity</div>
+            <div class="uc-tagline">Verify Once. Access Everywhere.</div>
+            <div class="uc-desc">KYC and identity credentials are chain-specific today. A wallet verified on Ethereum must re-verify on every L2 it wants to use — separately for DEX access, payment rails, and trading venues. There is no native way to propagate verified status across chains without a bridge or a centralised oracle. EEZ allows identity to be verified once and recognised atomically across all EEZ chains in the same transaction that first uses it.</div>
+            <div class="uc-hint">hover image to see the problem state</div>
+          </div>
         </div>
-        <div class="uc-meta">
-          <span class="uc-num">UC 06</span>
-          <div class="uc-title">cross-chain identity</div>
-          <div class="uc-cap">Identity verified once — works across DEX, payments, and trading protocols without re-authentication</div>
-          <div class="uc-hint">hover to see problem ↑</div>
-        </div>
-      </div>
 
-      <!-- UC 07: Private x Public Chain -->
-      <div class="uc-card">
-        <div class="uc-img-wrap">
-          <img class="img-solved"  src="img/private-public-solved.png"   alt="Private x Public Chain — solved">
-          <img class="img-problem" src="img/private-public-problem.png"  alt="Private x Public Chain — problem">
-          <span class="uc-img-badge">solved</span>
-          <span class="uc-img-badge-prob">problem</span>
+        <!-- UC 07 -->
+        <div class="uc-card">
+          <div class="uc-img-wrap">
+            <img class="img-solved"  src="img/private-public-solved.png"  alt="Private × public chain — solved">
+            <img class="img-problem" src="img/private-public-problem.png" alt="Private × public chain — problem">
+            <span class="uc-badge solved">solved</span>
+            <span class="uc-badge problem">problem</span>
+          </div>
+          <div class="uc-meta">
+            <span class="uc-num">UC 07</span>
+            <div class="uc-title">private × public chain</div>
+            <div class="uc-tagline">One Table. Two Zones. Atomic.</div>
+            <div class="uc-desc">Enterprises need private chains for sensitive operations — payroll, internal governance, confidential trading — alongside public chains for external settlement and liquidity. Today, bridging between the two requires custom infrastructure and introduces new trust assumptions at every boundary. EEZ creates a single governance layer spanning both zones: atomic membership management and commerce operate under one table, with no bridge and no information leakage between the private and public environments.</div>
+            <div class="uc-hint">hover image to see the problem state</div>
+          </div>
         </div>
-        <div class="uc-meta">
-          <span class="uc-num">UC 07</span>
-          <div class="uc-title">private × public chain</div>
-          <div class="uc-cap">One table, two zones: atomic membership + commerce — private chain and public chain under one governance</div>
-          <div class="uc-hint">hover to see problem ↑</div>
-        </div>
-      </div>
 
+      </div><!-- /uc-track -->
+    </div><!-- /uc-viewport -->
+
+    <div class="uc-dots" id="uc-dots">
+      <span class="uc-dot active" data-i="0"></span>
+      <span class="uc-dot" data-i="1"></span>
+      <span class="uc-dot" data-i="2"></span>
+      <span class="uc-dot" data-i="3"></span>
+      <span class="uc-dot" data-i="4"></span>
+      <span class="uc-dot" data-i="5"></span>
+      <span class="uc-dot" data-i="6"></span>
     </div>
+
   </div>
 </section>
+
+<script>
+(function () {
+  const track   = document.getElementById('uc-track');
+  const counter = document.getElementById('uc-counter');
+  const dots    = document.querySelectorAll('.uc-dot');
+  const btnPrev = document.getElementById('uc-prev');
+  const btnNext = document.getElementById('uc-next');
+
+  const TOTAL    = 8;
+  const PER_VIEW = 2;
+  const MAX      = TOTAL - PER_VIEW;   // 6 — last valid start index
+  let   current  = 0;
+
+  function cardWidth() {
+    return track.children[0].offsetWidth + 12; // card + gap
+  }
+
+  function render() {
+    track.style.transform = `translateX(-${current * cardWidth()}px)`;
+    counter.textContent   = String(current + 1).padStart(2,'0') + ' / 0' + TOTAL;
+    btnPrev.disabled      = current === 0;
+    btnNext.disabled      = current === MAX;
+    dots.forEach((d, i) => d.classList.toggle('active', i === current));
+  }
+
+  function go(n) {
+    current = Math.max(0, Math.min(n, MAX));
+    render();
+  }
+
+  btnPrev.addEventListener('click', () => go(current - 1));
+  btnNext.addEventListener('click', () => go(current + 1));
+  dots.forEach(d => d.addEventListener('click', () => go(+d.dataset.i)));
+
+  render();
+})();
+</script>
 
 <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
      § 5  WHAT EEZ BRINGS TO ETHEREUM
