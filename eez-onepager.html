@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ethereum Economic Zone — Technical Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <style>
+    /* ── Tokens ───────────────────────────────────────────────── */
+    :root {
+      --bg:           #000;
+      --fg:           #fff;
+      --fg-muted:     rgba(255,255,255,0.65);
+      --fg-dim:       rgba(255,255,255,0.35);
+      --border:       rgba(255,255,255,0.1);
+      --border-mid:   rgba(255,255,255,0.18);
+      --border-hi:    rgba(255,255,255,0.3);
+      --card:         rgba(255,255,255,0.04);
+      --card-hi:      rgba(255,255,255,0.07);
+      --purple:       #452bd6;
+      --purple-dim:   rgba(69,43,214,0.2);
+      --mint:         #65eba6;
+      --mint-dim:     rgba(101,235,166,0.12);
+      --mint-border:  rgba(101,235,166,0.35);
+      --amber-dim:    rgba(255,195,60,0.12);
+      --amber-border: rgba(200,145,40,0.45);
+      --font:         'Geist', 'Inter', system-ui, sans-serif;
+      --mono:         'JetBrains Mono', 'IBM Plex Mono', monospace;
+      --radius:       10px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 15px; scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--fg);
+      font-family: var(--font); font-weight: 400;
+      line-height: 1.5; -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Layout ───────────────────────────────────────────────── */
+    .page  { max-width: 1360px; margin: 0 auto; padding: 0 40px; }
+    section { border-bottom: 1px solid var(--border); }
+    section:last-child { border-bottom: none; }
+
+    /* ── Typography ───────────────────────────────────────────── */
+    .label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--fg-dim);
+    }
+    .label::before { content: '[ '; }
+    .label::after  { content: ' ]'; }
+
+    h2.sec-title {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--fg-dim);
+      margin-bottom: 28px;
+    }
+    h2.sec-title::before { content: '[ '; }
+    h2.sec-title::after  { content: ' ]'; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       § 1  HERO
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    #hero { padding: 52px 0 48px; }
+    .hero-meta {
+      display: flex; align-items: center; gap: 14px; margin-bottom: 24px;
+    }
+    .hero-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--mint); border: 1px solid var(--mint-border); border-radius: 2px;
+      padding: 4px 10px;
+    }
+    .hero-sep { width: 4px; height: 4px; border-radius: 50%; background: var(--fg-dim); }
+    .hero-meta-txt { font-size: 11px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.08em; }
+
+    h1 {
+      font-size: clamp(40px, 5vw, 66px); font-weight: 400;
+      line-height: 0.91; letter-spacing: -0.03em; text-transform: lowercase;
+      margin-bottom: 22px;
+    }
+    h1 em {
+      font-style: normal;
+      background: linear-gradient(115deg, #fff 50%, rgba(255,255,255,0.4) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    .hero-tagline {
+      display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+      font-size: 12px; color: var(--fg-muted); text-transform: uppercase;
+      letter-spacing: 0.06em; margin-bottom: 32px;
+    }
+    .hero-tagline span { color: var(--fg-dim); }
+
+    .hero-partners {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding-top: 24px; border-top: 1px solid var(--border);
+    }
+    .partner-label { font-size: 10px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.08em; }
+    .pill {
+      font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 3px 10px; border: 1px solid var(--border); border-radius: 2px; color: var(--fg-muted);
+    }
+    .pill.highlight { border-color: var(--mint-border); color: var(--mint); }
+
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       § 2  PROBLEM / SOLUTION
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    #problem { padding: 48px 0; }
+
+    .prob-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
+    }
+    .prob-col { padding: 28px 30px; }
+    .prob-col.left  { border-right: 1px solid var(--border); background: rgba(255,60,60,0.025); }
+    .prob-col.right { background: rgba(101,235,166,0.03); }
+
+    .col-hdr {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
+    }
+    .col-hdr-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .left  .col-hdr { color: #ff6666; }
+    .right .col-hdr { color: var(--mint); }
+    .left  .col-hdr-dot { background: #ff5555; }
+    .right .col-hdr-dot { background: var(--mint); }
+
+    .blist { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .blist li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 13px; color: var(--fg-muted); line-height: 1.5;
+    }
+    .blist li::before { content: '—'; flex-shrink: 0; font-size: 12px; margin-top: 1px; }
+    .left  .blist li::before { color: rgba(255,80,80,0.5); }
+    .right .blist li::before { color: var(--mint); }
+
+    .prob-illus {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border);
+    }
+    .island { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 4px 12px; border-radius: 20px;
+      border: 1px solid rgba(255,80,80,0.3); color: rgba(255,100,100,0.8); background: rgba(255,60,60,0.06); }
+    .cnode  { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 4px 12px; border-radius: 20px;
+      border: 1px solid var(--mint-border); color: var(--mint); background: var(--mint-dim); }
+    .carr   { font-size: 11px; color: var(--mint); }
+    .ceth   { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 5px 14px; border-radius: 20px;
+      border: 1px solid var(--mint-border); color: #000; background: var(--mint); }
+    .iso-note { font-size: 10px; color: rgba(255,80,80,0.5); text-transform: uppercase; letter-spacing: 0.05em; width: 100%; margin-top: 3px; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       § 3  TECHNICAL ARCHITECTURE  (unified)
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    #tech { padding: 48px 0; }
+
+    /* — summary flow — */
+    .flow-bar {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0; margin-bottom: 32px; flex-wrap: wrap;
+    }
+    .fn {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      padding: 14px 28px; border: 1px solid var(--border-mid); border-radius: 8px;
+      min-width: 190px; text-align: center;
+    }
+    .fn-lbl  { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--fg-dim); }
+    .fn-name { font-size: 14px; font-weight: 500; letter-spacing: -0.01em; }
+    .fn-sub  { font-size: 9px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--fg-dim); }
+    .fn-l1   { border-color: var(--mint-border); background: var(--mint-dim); }
+    .fn-l1   .fn-name { color: var(--mint); }
+    .fn-eez  { border-color: rgba(69,43,214,0.5); background: rgba(69,43,214,0.12); }
+    .fn-eez  .fn-name { color: #8b73ff; }
+    .fn-zone { background: rgba(255,255,255,0.03); }
+    .flow-conn {
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      padding: 0 14px;
+    }
+    .flow-conn-line { width: 48px; height: 1px; background: var(--border-mid); position: relative; }
+    .flow-conn-line::after {
+      content: '›'; position: absolute; right: -6px; top: -10px;
+      font-size: 15px; color: var(--fg-dim);
+    }
+    .flow-conn-lbl { font-size: 9px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* — 3-column grid — */
+    .tech-grid {
+      display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.05fr) minmax(0,1fr);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; background: var(--border);
+      gap: 1px;
+    }
+    .tc { padding: 24px 22px; background: var(--bg); }
+    .tc-hdr {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--fg-dim); margin-bottom: 18px;
+    }
+    .tc-hdr::before { content: '[ '; } .tc-hdr::after { content: ' ]'; }
+
+    /* composability table */
+    .mtable { width: 100%; border-collapse: collapse; }
+    .mtable th {
+      font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--fg-dim); padding: 7px 10px; border-bottom: 1px solid var(--border); text-align: center;
+    }
+    .mtable th:first-child { text-align: left; }
+    .mtable td { padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: center; vertical-align: middle; }
+    .mtable td:first-child { text-align: left; font-size: 13px; color: var(--fg-muted); }
+    .mtable tbody tr:last-child td { border-bottom: none; }
+    .csync {
+      display: inline-block; padding: 4px 10px; border-radius: 4px;
+      font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      background: var(--mint-dim); border: 1px solid var(--mint-border); color: var(--mint);
+    }
+    .casync {
+      display: inline-block; padding: 4px 10px; border-radius: 4px;
+      font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      background: var(--amber-dim); border: 1px solid var(--amber-border); color: #ffc040;
+    }
+    .mcallout {
+      margin-top: 14px; padding: 11px 13px;
+      background: rgba(101,235,166,0.06); border: 1px solid var(--mint-border);
+      border-radius: 6px; font-size: 11px; color: var(--mint); line-height: 1.55;
+    }
+
+    /* execution timeline */
+    .tl { list-style: none; display: flex; flex-direction: column; }
+    .tl li { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .tl li:last-child { border-bottom: none; }
+    .tl-n { font-family: var(--mono); font-size: 9px; color: var(--fg-dim); min-width: 18px; padding-top: 2px; flex-shrink: 0; }
+    .tl-n.purple { color: #8b73ff; }
+    .tl-m { font-size: 12px; font-weight: 500; color: var(--fg); margin-bottom: 2px; }
+    .tl-s { font-size: 10px; color: var(--fg-dim); line-height: 1.5; }
+
+    /* smart contract */
+    .sc-structs { display: flex; flex-direction: column; gap: 6px; }
+    .sc-struct { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+    .sc-struct-name {
+      padding: 6px 11px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em;
+      border-bottom: 1px solid var(--border);
+    }
+    .sc-struct-name.blue   { background: rgba(80,130,255,0.1);  color: #6699ff; border-color: rgba(80,130,255,0.2); }
+    .sc-struct-name.purple { background: rgba(69,43,214,0.18);  color: #9b83ff; border-color: rgba(69,43,214,0.3); }
+    .sc-struct-name.green  { background: var(--mint-dim);        color: var(--mint); border-color: var(--mint-border); }
+    .sc-struct-fields { padding: 7px 11px; font-family: var(--mono); font-size: 9.5px; color: var(--fg-dim); line-height: 1.9; }
+    .sc-fns {
+      margin-top: 12px; padding: 10px 11px;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px;
+    }
+    .sc-fns p { font-family: var(--mono); font-size: 10px; color: var(--fg-muted); line-height: 1.8; }
+    .sc-fns span { color: var(--fg-dim); }
+    .sc-note { font-size: 10px; color: var(--fg-dim); margin-top: 8px; line-height: 1.55; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       § 4  USE CASES — image grid
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    #usecases { padding: 48px 0; background: rgba(255,255,255,0.01); }
+
+    .uc-intro {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .uc-intro-hint {
+      font-size: 11px; color: var(--fg-dim); text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .uc-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+    }
+
+    .uc-card {
+      border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+      background: var(--card);
+      display: flex; flex-direction: column;
+      cursor: default;
+    }
+    .uc-card:hover { border-color: var(--border-mid); }
+
+    /* image flip container */
+    .uc-img-wrap {
+      position: relative; aspect-ratio: 16/9; overflow: hidden;
+      background: #0a1520;
+    }
+    .uc-img-wrap img {
+      position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+      transition: opacity 0.35s ease;
+    }
+    .uc-img-wrap .img-solved  { opacity: 1;  z-index: 2; }
+    .uc-img-wrap .img-problem { opacity: 0;  z-index: 1; }
+    .uc-card:hover .img-solved  { opacity: 0; }
+    .uc-card:hover .img-problem { opacity: 1; }
+
+    .uc-img-badge {
+      position: absolute; top: 8px; right: 8px; z-index: 3;
+      font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+      padding: 3px 8px; border-radius: 3px;
+      background: var(--mint); color: #000;
+      transition: opacity 0.25s;
+    }
+    .uc-card:hover .uc-img-badge { opacity: 0; }
+
+    .uc-img-badge-prob {
+      position: absolute; top: 8px; right: 8px; z-index: 3;
+      font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+      padding: 3px 8px; border-radius: 3px;
+      background: rgba(255,60,60,0.85); color: #fff;
+      opacity: 0; transition: opacity 0.25s;
+    }
+    .uc-card:hover .uc-img-badge-prob { opacity: 1; }
+
+    .uc-meta { padding: 12px 14px 14px; flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    .uc-num  { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--purple); }
+    .uc-num::before { content: '[ '; } .uc-num::after { content: ' ]'; }
+    .uc-title { font-size: 13px; font-weight: 500; text-transform: lowercase; color: var(--fg); }
+    .uc-cap   { font-size: 11px; color: var(--fg-dim); line-height: 1.5; margin-top: 4px; }
+    .uc-hint  {
+      font-size: 9px; color: rgba(255,255,255,0.2); text-transform: uppercase;
+      letter-spacing: 0.08em; margin-top: auto; padding-top: 8px;
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       § 5  WHAT EEZ BRINGS TO ETHEREUM
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    #impact { padding: 48px 0; }
+
+    .impact-row1 {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 10px;
+    }
+    .impact-row2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+
+    .imp-card {
+      padding: 20px 20px; border: 1px solid var(--border); border-radius: 8px; background: var(--card);
+      transition: border-color 0.2s;
+    }
+    .imp-card:hover { border-color: var(--border-mid); background: var(--card-hi); }
+    .imp-lbl   { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--fg-dim); margin-bottom: 8px; }
+    .imp-lbl::before { content: '[ '; } .imp-lbl::after { content: ' ]'; }
+    .imp-title { font-size: 14px; font-weight: 500; text-transform: lowercase; margin-bottom: 6px; }
+    .imp-desc  { font-size: 12px; color: var(--fg-muted); line-height: 1.6; }
+    .imp-card.c-mint   { border-color: var(--mint-border); }
+    .imp-card.c-mint   .imp-lbl { color: var(--mint); }
+    .imp-card.c-purple { border-color: rgba(69,43,214,0.4); }
+    .imp-card.c-purple .imp-lbl { color: #9b83ff; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       § 6  KEY SPECS TABLE
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    #specs { padding: 48px 0 60px; }
+
+    .specs-wrap { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .specs-tbl { width: 100%; border-collapse: collapse; }
+    .specs-tbl thead tr { background: rgba(255,255,255,0.045); }
+    .specs-tbl th {
+      font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--fg-dim); padding: 13px 16px; text-align: left;
+      border-right: 1px solid var(--border);
+    }
+    .specs-tbl th:last-child { border-right: none; }
+    .specs-tbl tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    .specs-tbl tbody tr:last-child { border-bottom: none; }
+    .specs-tbl tbody tr:hover { background: var(--card-hi); }
+    .specs-tbl tbody tr:nth-child(even) { background: rgba(255,255,255,0.016); }
+    .specs-tbl tbody tr:nth-child(even):hover { background: var(--card-hi); }
+    .specs-tbl td { padding: 12px 16px; vertical-align: middle; border-right: 1px solid var(--border); }
+    .specs-tbl td:last-child { border-right: none; }
+    .sname { color: #8b9ccc; font-weight: 500; font-size: 12px; white-space: nowrap; }
+    .sval {
+      display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; padding: 4px 11px; border-radius: 4px; white-space: nowrap;
+    }
+    .sv-p { background: var(--purple-dim); border: 1px solid rgba(69,43,214,0.4); color: #9b83ff; }
+    .sv-b { background: rgba(80,130,255,0.1); border: 1px solid rgba(80,130,255,0.3); color: #6699ff; }
+    .sv-m { background: var(--mint-dim); border: 1px solid var(--mint-border); color: var(--mint); }
+    .sdesc { font-size: 12px; color: var(--fg-muted); line-height: 1.55; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       FOOTER
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    footer { padding: 24px 0; }
+    .foot-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .foot-l { font-size: 10px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.08em; }
+    .foot-r { display: flex; gap: 20px; }
+    .foot-r a { font-size: 10px; color: var(--fg-dim); text-decoration: none; text-transform: uppercase; letter-spacing: 0.08em; }
+    .foot-r a:hover { color: var(--fg); }
+  </style>
+</head>
+<body>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     § 1  HERO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<section id="hero">
+  <div class="page">
+    <div class="hero-text">
+      <div class="hero-meta">
+        <span class="hero-badge">Announced March 2026</span>
+        <div class="hero-sep"></div>
+        <span class="hero-meta-txt">EthCC · Cannes · co-funded by Ethereum Foundation</span>
+      </div>
+      <h1>ethereum<br><em>economic zone</em></h1>
+      <div class="hero-tagline">
+        real-time zk proofs <span>·</span>
+        synchronous composability <span>·</span>
+        one ethereum
+      </div>
+      <div class="hero-partners">
+        <span class="partner-label">Built by</span>
+        <span class="pill">Gnosis</span>
+        <span class="pill">ZisK</span>
+        <span class="pill highlight">Ethereum Foundation</span>
+        <span class="partner-label" style="margin-left:6px">Alliance</span>
+        <span class="pill">Aave</span>
+        <span class="pill">Flashbots</span>
+        <span class="pill">Safe</span>
+        <span class="pill">CoW Swap</span>
+        <span class="pill">Nethermind</span>
+        <span class="pill">+ 5 more</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     § 2  PROBLEM / SOLUTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<section id="problem">
+  <div class="page">
+    <h2 class="sec-title">the problem &amp; the solution</h2>
+    <div class="prob-grid">
+
+      <div class="prob-col left">
+        <div class="col-hdr"><div class="col-hdr-dot"></div>Ethereum fragmentation — today</div>
+        <ul class="blist">
+          <li>100+ isolated L2 networks — each its own walled garden with separate liquidity</li>
+          <li>$32–40B TVL fragmented; 40% reduction in average DEX depth</li>
+          <li>62% of users report difficulty bridging — multi-step, slippage, delay</li>
+          <li>Bridge hacks are the #1 DeFi exploit by dollar value</li>
+          <li>MEV + sequencing fees captured by private operators, not Ethereum</li>
+          <li>Aave (L1) + Uniswap (L2) = two separate transactions with bridging in between</li>
+        </ul>
+        <div class="prob-illus">
+          <div class="island">L2 A</div>
+          <div class="island">L2 B</div>
+          <div class="island">L2 C</div>
+          <div class="island">L2 D</div>
+          <span class="iso-note">← no connections, no composability between islands</span>
+        </div>
+      </div>
+
+      <div class="prob-col right">
+        <div class="col-hdr"><div class="col-hdr-dot"></div>With EEZ — one unified economic zone</div>
+        <ul class="blist">
+          <li>Atomic cross-L2 transactions in one Ethereum block — no bridge required</li>
+          <li>Bridge risk eliminated — all settlement on Ethereum L1 directly</li>
+          <li>Liquidity consolidates — deploy once, accessible across all EEZ instances</li>
+          <li>MEV + sequencing fees flow back to the Ethereum protocol</li>
+          <li>ZK proving funded by Ethereum issuance — proving as public good</li>
+          <li>Aave (L1) + Uniswap (L2) in ONE atomic transaction, as if on the same chain</li>
+        </ul>
+        <div class="prob-illus">
+          <div class="cnode">EEZ L2 A</div>
+          <div class="carr">→</div>
+          <div class="ceth">Ethereum L1</div>
+          <div class="carr">←</div>
+          <div class="cnode">EEZ L2 B</div>
+          <div class="carr">↔</div>
+          <div class="cnode">EEZ L2 C</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     § 3  TECHNICAL ARCHITECTURE  (unified)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<section id="tech">
+  <div class="page">
+    <h2 class="sec-title">technical architecture</h2>
+
+    <!-- Summary flow bar -->
+    <div class="flow-bar">
+      <div class="fn fn-l1">
+        <span class="fn-lbl">Settlement</span>
+        <span class="fn-name">Ethereum L1</span>
+        <span class="fn-sub">source of truth</span>
+      </div>
+      <div class="flow-conn">
+        <div class="flow-conn-line"></div>
+        <span class="flow-conn-lbl">ZK proofs</span>
+      </div>
+      <div class="fn fn-eez">
+        <span class="fn-lbl">Framework</span>
+        <span class="fn-name">EEZ Rollup Layer</span>
+        <span class="fn-sub">N ZK-proven EVM instances</span>
+      </div>
+      <div class="flow-conn">
+        <div class="flow-conn-line"></div>
+        <span class="flow-conn-lbl">composability</span>
+      </div>
+      <div class="fn fn-zone">
+        <span class="fn-lbl">Result</span>
+        <span class="fn-name">Unified EVM Zone</span>
+        <span class="fn-sub">atomic · no bridges</span>
+      </div>
+    </div>
+
+    <!-- 3-column detail grid -->
+    <div class="tech-grid">
+
+      <!-- Col A: Composability Matrix -->
+      <div class="tc">
+        <div class="tc-hdr">Composability Matrix</div>
+        <table class="mtable">
+          <thead>
+            <tr><th>Direction</th><th>Reads</th><th>Writes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>L2 → L1</td><td><span class="csync">Sync</span></td><td><span class="csync">Sync</span></td></tr>
+            <tr><td>L1 → L2</td><td><span class="casync">Async</span></td><td><span class="csync">Sync</span></td></tr>
+            <tr><td>L2 → L2</td><td><span class="casync">Async</span></td><td><span class="csync">Sync</span></td></tr>
+          </tbody>
+        </table>
+        <div class="mcallout">
+          From any EEZ rollup: read L1 state synchronously and write atomically across all rollups in one transaction. No bridge. No multisig. No messenger.
+        </div>
+      </div>
+
+      <!-- Col B: Execution Steps -->
+      <div class="tc">
+        <div class="tc-hdr">How Sync Composability Works</div>
+        <ol class="tl">
+          <li>
+            <span class="tl-n">01</span>
+            <div><div class="tl-m">user initiates cross-chain call</div>
+            <div class="tl-s">Standard EVM tx — no new wallet primitives required</div></div>
+          </li>
+          <li>
+            <span class="tl-n">02</span>
+            <div><div class="tl-m">ExecutionEntry submitted to L1 Settlement Contract</div>
+            <div class="tl-s">Predicts outcome: source · target · callData · expectedResult</div></div>
+          </li>
+          <li>
+            <span class="tl-n purple">03</span>
+            <div><div class="tl-m">ZisK generates ZK proof of L1 state (~3 seconds)</div>
+            <div class="tl-s">128-bit security · quantum resistant · pipelined with block build · fits 12s slot</div></div>
+          </li>
+          <li>
+            <span class="tl-n">04</span>
+            <div><div class="tl-m">postAndVerifyBatches() verifies all proofs on L1</div>
+            <div class="tl-s">Single Ethereum tx — all proofs verified before any state changes</div></div>
+          </li>
+          <li>
+            <span class="tl-n">05</span>
+            <div><div class="tl-m">all rollup states update atomically</div>
+            <div class="tl-s">ETH as gas · no private sequencer · issuance can fund proving</div></div>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Col C: Smart Contract Architecture -->
+      <div class="tc">
+        <div class="tc-hdr">Smart Contract Architecture</div>
+        <div class="sc-structs">
+          <div class="sc-struct">
+            <div class="sc-struct-name blue">Rollup</div>
+            <div class="sc-struct-fields">owner · proofContract<br>provers mapping<br>currentState (bytes32) · lastUpdate</div>
+          </div>
+          <div class="sc-struct">
+            <div class="sc-struct-name purple">ExecutionEntry</div>
+            <div class="sc-struct-fields">source · target · callData<br>expectedResult · settled (bool)</div>
+          </div>
+          <div class="sc-struct">
+            <div class="sc-struct-name green">StateDelta</div>
+            <div class="sc-struct-fields">newStateRoot · returnData<br>success (bool)</div>
+          </div>
+        </div>
+        <div class="sc-fns">
+          <p>registerRollup(<span>owner, proofVerifier, proverTypes</span>)</p>
+          <p>postAndVerifyBatches(<span>rollupIds, entries, proofs</span>)</p>
+        </div>
+        <p class="sc-note">Verifies ALL proofs first · executes all entries · updates ALL rollup states in a single Ethereum transaction. Partial failure impossible.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     § 4  KEY SPECS TABLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<section id="specs">
+  <div class="page">
+    <h2 class="sec-title">key technical specifications</h2>
+    <div class="specs-wrap">
+      <table class="specs-tbl">
+        <thead>
+          <tr>
+            <th style="width:16%">Specification</th>
+            <th style="width:16%">Value</th>
+            <th>Detail</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="sname">Proving time</span></td>
+            <td><span class="sval sv-p">~3s gap time</span></td>
+            <td class="sdesc">Pipelined with block build via ZisK — fits within the 12-second Ethereum slot with margin. Jordi Baylina: "currently around 3 seconds, with room to improve."</td>
+          </tr>
+          <tr>
+            <td><span class="sname">Security</span></td>
+            <td><span class="sval sv-b">128-bit / QR</span></td>
+            <td class="sdesc">128-bit security · quantum resistant · fully open source · multiple independent audits required before mainnet deployment.</td>
+          </tr>
+          <tr>
+            <td><span class="sname">Prover diversity</span></td>
+            <td><span class="sval sv-b">≥ 2 independent</span></td>
+            <td class="sdesc">Minimum two independent proof implementations from day one — mirrors Ethereum L1's client diversity. Single-prover risk is the largest attack surface in any ZK rollup; EEZ does not accept it.</td>
+          </tr>
+          <tr>
+            <td><span class="sname">Protocol changes</span></td>
+            <td><span class="sval sv-m">None required</span></td>
+            <td class="sdesc">Works via smart contracts and ZK proofs alone — no Ethereum hard fork needed. Credibly neutral from day one; any L2 can integrate without permission.</td>
+          </tr>
+          <tr>
+            <td><span class="sname">Gas token</span></td>
+            <td><span class="sval sv-m">ETH</span></td>
+            <td class="sdesc">No separate token. Sequencing value and MEV return to Ethereum. Issuance mechanism can fund ZK proof generation as a protocol-level public good.</td>
+          </tr>
+          <tr>
+            <td><span class="sname">Settlement</span></td>
+            <td><span class="sval sv-m">Ethereum L1</span></td>
+            <td class="sdesc">Single source of truth. All cross-rollup finality settles on Ethereum mainnet — no new consensus layer, no additional trust assumptions beyond Ethereum itself.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     § 5  USE CASES — image grid
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<section id="usecases">
+  <div class="page">
+    <div class="uc-intro">
+      <h2 class="sec-title" style="margin-bottom:0">8 use cases — what EEZ enables</h2>
+      <span class="uc-intro-hint">Hover any card to see the problem state</span>
+    </div>
+
+    <div class="uc-grid">
+
+      <!-- UC 00: Synchronous Execution (Hero) -->
+      <div class="uc-card">
+        <div class="uc-img-wrap">
+          <img class="img-solved"  src="img/hero-solved.png"   alt="Synchronous execution — solved">
+          <img class="img-problem" src="img/hero-problem.png"  alt="Sequential execution — problem">
+          <span class="uc-img-badge">solved</span>
+          <span class="uc-img-badge-prob">problem</span>
+        </div>
+        <div class="uc-meta">
+          <span class="uc-num">UC 00</span>
+          <div class="uc-title">synchronous execution</div>
+          <div class="uc-cap">All nodes execute, verify, and settle in one instant — zero failure points, atomic finality</div>
+          <div class="uc-hint">hover to see problem ↑</div>
+        </div>
+      </div>
+
+      <!-- UC 01: Bridging -->
+      <div class="uc-card">
+        <div class="uc-img-wrap">
+          <img class="img-solved"  src="img/bridging-solved.png"   alt="Bridging — solved">
+          <img class="img-problem" src="img/bridging-problem.png"  alt="Bridging — problem">
+          <span class="uc-img-badge">solved</span>
+          <span class="uc-img-badge-prob">problem</span>
+        </div>
+        <div class="uc-meta">
+          <span class="uc-num">UC 01</span>
+          <div class="uc-title">bridging eliminated</div>
+          <div class="uc-cap">Synchronous composability: Verify → Flow → Settle — atomic, no trusted bridge operator</div>
+          <div class="uc-hint">hover to see problem ↑</div>
+        </div>
+      </div>
+
+      <!-- UC 02: Liquidity -->
+      <div class="uc-card">
+        <div class="uc-img-wrap">
+          <img class="img-solved"  src="img/liquidity-solved.png"   alt="Liquidity — solved">
+          <img class="img-problem" src="img/liquidity-problem.png"  alt="Liquidity — problem">
+          <span class="uc-img-badge">solved</span>
+          <span class="uc-img-badge-prob">problem</span>
+        </div>
+        <div class="uc-meta">
+          <span class="uc-num">UC 02</span>
+          <div class="uc-title">unified market liquidity</div>
+          <div class="uc-cap">Unified market: one price, instant arbitrage across all EEZ instances — no fragmentation</div>
+          <div class="uc-hint">hover to see problem ↑</div>
+        </div>
+      </div>
+
+      <!-- UC 03: Composable Finance -->
+      <div class="uc-card">
+        <div class="uc-img-wrap">
+          <img class="img-solved"  src="img/composable-solved.png"   alt="Composable Finance — solved">
+          <img class="img-problem" src="img/composable-problem.png"  alt="Composable Finance — problem">
+          <span class="uc-img-badge">solved</span>
+          <span class="uc-img-badge-prob">problem</span>
+        </div>
+        <div class="uc-meta">
+          <span class="uc-num">UC 03</span>
+          <div class="uc-title">composable finance</div>
+          <div class="uc-cap">One transaction, one atomic flow, zero failure points — DeFi money-lego across chains</div>
+          <div class="uc-hint">hover to see problem ↑</div>
+        </div>
+      </div>
+
+      <!-- UC 04: Global Collateral -->
+      <div class="uc-card">
+        <div class="uc-img-wrap">
+          <img class="img-solved"  src="img/collateral-solved.png"   alt="Global Collateral — solved">
+          <img class="img-problem" src="img/collateral-problem.png"  alt="Global Collateral — problem">
+          <span class="uc-img-badge">solved</span>
+          <span class="uc-img-badge-prob">problem</span>
+        </div>
+        <div class="uc-meta">
+          <span class="uc-num">UC 04</span>
+          <div class="uc-title">global collateral visibility</div>
+          <div class="uc-cap">Credit limits visible and enforced across all chains simultaneously — global balance, instant settlement</div>
+          <div class="uc-hint">hover to see problem ↑</div>
+        </div>
+      </div>
+
+      <!-- UC 05: Global Access Control -->
+      <div class="uc-card">
+        <div class="uc-img-wrap">
+          <img class="img-solved"  src="img/access-solved.png"   alt="Global Access Control — solved">
+          <img class="img-problem" src="img/access-problem.png"  alt="Global Access Control — problem">
+          <span class="uc-img-badge">solved</span>
+          <span class="uc-img-badge-prob">problem</span>
+        </div>
+        <div class="uc-meta">
+          <span class="uc-num">UC 05</span>
+          <div class="uc-title">atomic governance</div>
+          <div class="uc-cap">All vaults sync in one instant — one change, all chains. Atomic multisig governance across Ethereum, Optimism, Arbitrum, Polygon</div>
+          <div class="uc-hint">hover to see problem ↑</div>
+        </div>
+      </div>
+
+      <!-- UC 06: Private ID -->
+      <div class="uc-card">
+        <div class="uc-img-wrap">
+          <img class="img-solved"  src="img/identity-solved.png"   alt="Private ID — solved">
+          <img class="img-problem" src="img/identity-problem.png"  alt="Private ID — problem">
+          <span class="uc-img-badge">solved</span>
+          <span class="uc-img-badge-prob">problem</span>
+        </div>
+        <div class="uc-meta">
+          <span class="uc-num">UC 06</span>
+          <div class="uc-title">cross-chain identity</div>
+          <div class="uc-cap">Identity verified once — works across DEX, payments, and trading protocols without re-authentication</div>
+          <div class="uc-hint">hover to see problem ↑</div>
+        </div>
+      </div>
+
+      <!-- UC 07: Private x Public Chain -->
+      <div class="uc-card">
+        <div class="uc-img-wrap">
+          <img class="img-solved"  src="img/private-public-solved.png"   alt="Private x Public Chain — solved">
+          <img class="img-problem" src="img/private-public-problem.png"  alt="Private x Public Chain — problem">
+          <span class="uc-img-badge">solved</span>
+          <span class="uc-img-badge-prob">problem</span>
+        </div>
+        <div class="uc-meta">
+          <span class="uc-num">UC 07</span>
+          <div class="uc-title">private × public chain</div>
+          <div class="uc-cap">One table, two zones: atomic membership + commerce — private chain and public chain under one governance</div>
+          <div class="uc-hint">hover to see problem ↑</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     § 5  WHAT EEZ BRINGS TO ETHEREUM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<section id="impact">
+  <div class="page">
+    <h2 class="sec-title">what EEZ brings to ethereum</h2>
+    <div class="impact-row1">
+      <div class="imp-card c-mint">
+        <div class="imp-lbl">Settlement</div>
+        <div class="imp-title">settlement layer dominance</div>
+        <div class="imp-desc">L2s settle to Ethereum L1 by design — Ethereum is the single source of truth, not one island among many competing for value.</div>
+      </div>
+      <div class="imp-card c-mint">
+        <div class="imp-lbl">Economics</div>
+        <div class="imp-title">economic realignment</div>
+        <div class="imp-desc">MEV and sequencing fees return to the Ethereum protocol. Issuance can fund ZK proving as a public good — not an external cost.</div>
+      </div>
+      <div class="imp-card c-purple">
+        <div class="imp-lbl">Network</div>
+        <div class="imp-title">network effects flywheel</div>
+        <div class="imp-desc">More EEZ L2s → more unified liquidity → better UX → more L2s. Ethereum's gravity compounds with each new instance.</div>
+      </div>
+    </div>
+    <div class="impact-row2">
+      <div class="imp-card">
+        <div class="imp-lbl">Governance</div>
+        <div class="imp-title">credible neutrality at scale</div>
+        <div class="imp-desc">No multisigs, no upgrade keys, no company controls it. Same governance standard as Ethereum protocol changes — public deliberation, multi-client from day one.</div>
+      </div>
+      <div class="imp-card c-purple">
+        <div class="imp-lbl">DeFi</div>
+        <div class="imp-title">composability restored</div>
+        <div class="imp-desc">The DeFi money-lego model extended across chains. Flash loans, complex strategies, unified liquidity — everything that made Ethereum DeFi great, now across all EEZ L2s without bridges.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     FOOTER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<footer>
+  <div class="page">
+    <div class="foot-inner">
+      <div class="foot-l">Ethereum Economic Zone · eez.io · announced March 2026 · co-funded by the Ethereum Foundation</div>
+      <div class="foot-r">
+        <a href="https://eez.io">eez.io</a>
+        <a href="https://x.com/EthEconomicZone">@EthEconomicZone</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
