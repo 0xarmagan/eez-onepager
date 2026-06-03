@@ -421,6 +421,99 @@
     .foot-r { display: flex; gap: 20px; }
     .foot-r a { font-size: 10px; color: var(--fg-dim); text-decoration: none; text-transform: uppercase; letter-spacing: 0.08em; }
     .foot-r a:hover { color: var(--fg); }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       RESPONSIVE — tablet (≤ 900px)
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    @media (max-width: 900px) {
+      .tech-grid { grid-template-columns: 1fr; }
+      .impact-row1 { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       RESPONSIVE — mobile (≤ 768px)
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    @media (max-width: 768px) {
+
+      /* Layout */
+      body { overflow-x: hidden; }
+      .page { padding: 0 16px; }
+      section { padding-top: 36px !important; padding-bottom: 36px !important; }
+
+      /* Hero */
+      #hero { padding: 36px 0 32px !important; }
+      h1 { font-size: clamp(34px, 9vw, 52px); }
+      .hero-tagline { font-size: 10px; gap: 8px; }
+      .hero-partners { gap: 6px; }
+      .pill { font-size: 9px; padding: 3px 8px; }
+
+      /* Problem — stack vertically */
+      .prob-grid { grid-template-columns: 1fr; }
+      .prob-col.left {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+
+      /* Flow bar — stack vertically */
+      .flow-bar { flex-direction: column; align-items: stretch; gap: 0; }
+      .fn {
+        flex-direction: row; justify-content: space-between;
+        align-items: center; padding: 12px 16px;
+        min-width: 0;
+      }
+      .fn-lbl  { display: none; }
+      .fn-sub  { display: none; }
+      .fn-name { font-size: 14px; }
+      .flow-conn {
+        display: flex; flex-direction: row; justify-content: center;
+        padding: 2px 0;
+      }
+      .flow-conn-line {
+        width: 1px; height: 16px; background: var(--border-mid); position: relative;
+      }
+      .flow-conn-line::after {
+        content: '↓'; right: auto; left: -5px; top: auto; bottom: -12px;
+        font-size: 12px;
+      }
+      .flow-conn-lbl { display: none; }
+
+      /* Tech — already stacked at 900px */
+      .tc { padding: 20px 16px; }
+
+      /* Specs — horizontal scroll */
+      .specs-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .specs-tbl  { min-width: 580px; }
+
+      /* Carousel — 1 card per view (width set by JS) */
+      .uc-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .uc-meta   { padding: 16px 16px 18px; }
+      .uc-title  { font-size: 15px; }
+      .uc-desc   { font-size: 12px; }
+      .uc-hint::after { content: ' (tap image)'; }
+      .uc-hint { font-size: 0; } /* hide "hover image" text */
+      .uc-hint::after { font-size: 9px; color: rgba(255,255,255,0.18); text-transform: uppercase; letter-spacing: 0.08em; content: 'tap image to see problem state'; }
+
+      /* Impact — single column */
+      .impact-row1 { grid-template-columns: 1fr; }
+      .impact-row2 { grid-template-columns: 1fr; }
+
+      /* Footer */
+      .foot-inner { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .foot-r { gap: 14px; }
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       RESPONSIVE — small mobile (≤ 480px)
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    @media (max-width: 480px) {
+      .page { padding: 0 14px; }
+      h1 { font-size: clamp(30px, 10vw, 44px); }
+      .hero-tagline { flex-direction: column; gap: 4px; }
+      .hero-tagline span { display: none; }
+      .uc-title { font-size: 14px; }
+      .mtable   { font-size: 11px; }
+      .csync, .casync { padding: 3px 7px; font-size: 8px; }
+    }
   </style>
 </head>
 <body>
@@ -850,33 +943,54 @@
   const dots    = document.querySelectorAll('.uc-dot');
   const btnPrev = document.getElementById('uc-prev');
   const btnNext = document.getElementById('uc-next');
+  const GAP     = 12;
+  const TOTAL   = 8;
+  let current   = 0;
 
-  const TOTAL    = 8;
-  const PER_VIEW = 2;
-  const MAX      = TOTAL - PER_VIEW;   // 6 — last valid start index
-  let   current  = 0;
+  function perView()  { return window.innerWidth <= 768 ? 1 : 2; }
+  function maxSlide() { return TOTAL - perView(); }
 
-  function cardWidth() {
-    return track.children[0].offsetWidth + 12; // card + gap
+  function setWidths() {
+    const pv = perView();
+    const vw = track.parentElement.offsetWidth;
+    const w  = Math.floor((vw - (pv - 1) * GAP) / pv);
+    Array.from(track.children).forEach(c => {
+      c.style.flex     = '0 0 ' + w + 'px';
+      c.style.minWidth = w + 'px';
+    });
   }
 
   function render() {
-    track.style.transform = `translateX(-${current * cardWidth()}px)`;
-    counter.textContent   = String(current + 1).padStart(2,'0') + ' / 0' + TOTAL;
+    current = Math.min(current, maxSlide());
+    const w = track.children[0].offsetWidth;
+    track.style.transform = `translateX(-${current * (w + GAP)}px)`;
+    counter.textContent   = String(current + 1).padStart(2, '0') + ' / 0' + TOTAL;
     btnPrev.disabled      = current === 0;
-    btnNext.disabled      = current === MAX;
+    btnNext.disabled      = current === maxSlide();
     dots.forEach((d, i) => d.classList.toggle('active', i === current));
   }
 
-  function go(n) {
-    current = Math.max(0, Math.min(n, MAX));
-    render();
-  }
+  function go(n) { current = Math.max(0, Math.min(n, maxSlide())); render(); }
 
   btnPrev.addEventListener('click', () => go(current - 1));
   btnNext.addEventListener('click', () => go(current + 1));
   dots.forEach(d => d.addEventListener('click', () => go(+d.dataset.i)));
 
+  // Touch / swipe support
+  let touchX = 0;
+  track.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+  track.addEventListener('touchend',   e => {
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 40) go(current + (dx < 0 ? 1 : -1));
+  });
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => { setWidths(); render(); }, 80);
+  });
+
+  setWidths();
   render();
 })();
 </script>
